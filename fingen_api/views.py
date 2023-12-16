@@ -1,6 +1,6 @@
 from rest_framework import generics
 from .models import Quotation, Invoice, LedgerAccount
-from .serializers import QuotationSerializer, InvoiceSerializer, LedgerAccountSerializer
+from .serializers import QuotationSerializer, InvoiceSerializer
 
 
 class QuotationListCreateView(generics.ListCreateAPIView):
@@ -15,6 +15,6 @@ class InvoiceListCreateView(generics.ListCreateAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     
-class LedgerAccountListCreateView(generics.ListCreateAPIView):
-    queryset = LedgerAccount.objects.all()
-    serializer_class = LedgerAccountSerializer
+# class LedgerAccountListCreateView(generics.ListCreateAPIView):
+#     queryset = LedgerAccount.objects.all()
+#     serializer_class = LedgerAccountSerializer
