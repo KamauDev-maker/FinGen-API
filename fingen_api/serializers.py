@@ -11,7 +11,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
         model = Invoice
         fields = '__all__'
         
-class LedgerAccountSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LedgerAccount
-        fields = '__all__'
+# class LedgerAccountSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = LedgerAccount
+#         fields = '__all__'
