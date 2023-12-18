@@ -5,8 +5,7 @@ from datetime import datetime, timedelta
 # Create your models here.
 class Quotation(models.Model):
     customer_name = models.CharField(max_length=255)
-    number_of_items = models.IntegerField(default=1)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    items = models.ManyToManyField('Item', through='QuotationItem')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     issue_date = models.DateField(auto_now_add=True)
     expiration_date = models.DateField(default=None, null=True)
@@ -18,8 +17,23 @@ class Quotation(models.Model):
         if not self.expiration_date:
             self.expiration_date = self.issue_date + timedelta(days=7)
 
-        self.total_amount = self.price * self.number_of_items
         super().save(*args, **kwargs)
+        self.calculate_total_amount()
+        
+    def calculate_total_amount(self):
+        total_amount = sum(item.price * item.quantity for item in self.items.all())
+        self.total_amount = total_amount
+        self.save()
+        
+class Item(models.Model):
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+
+class QuotationItem(models.Model):
+    quotation = models.ForeignKey(Quotation, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+        
 class Invoice(models.Model):
     quotation = models.OneToOneField(Quotation, on_delete=models.CASCADE)
     invoice_number =models.CharField(max_length=20, unique=True)

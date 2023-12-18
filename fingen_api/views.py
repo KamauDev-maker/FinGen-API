@@ -37,4 +37,12 @@ class LedgerAccountListCreateView(generics.ListCreateAPIView):
     
     def list(self, request, *args, **kwargs):
         total_amount = LedgerAccount.calculate_total_amount()
-        return Response({'total_amount': total_amount, 'amount': total_amount}, status=status.HTTP_200_OK)
+        
+        ledger_accounts = self.get_queryset()
+        serializer = self.get_serializer(ledger_accounts, many=True)
+        response_data = {
+            'total_amount': total_amount,
+            'ledger_accounts': serializer.data,
+        }
+        
+        return Response(response_data, status=status.HTTP_200_OK)

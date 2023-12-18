@@ -16,3 +16,7 @@ class LedgerAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = LedgerAccount
         fields = '__all__'
+        
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        return representation
