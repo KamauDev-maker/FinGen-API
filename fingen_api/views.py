@@ -1,6 +1,6 @@
 from rest_framework import status, generics
-from .models import Quotation, Invoice, LedgerAccount, item, QuotationItem
-from .serializers import QuotationSerializer, InvoiceSerializer, LedgerAccountSerializer, ItemSerializer, QuotationItemSerializer
+from .models import Quotation, Invoice, LedgerAccount
+from .serializers import QuotationSerializer, InvoiceSerializer, LedgerAccountSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -8,20 +8,12 @@ from rest_framework.response import Response
 def create_quotation(request):
     serializer = QuotationSerializer(data=request.data)
     if serializer.is_valid():
-        items_data = request.data.get('items', [])
+        price = serializer.validated_data.get('price', 0.0)
+        number_of_items = serializer.validated_data.get('number_of_items')
+        total_amount = price * number_of_items
 
-        quotation = serializer.save()
         
-        total_amount = sum(item_data['item']['price'] * item_data['quantity'] for item_data in items_data)
-        
-        for item_data in items_data:
-            item_serializer = ItemSerializer(data=item_data['item'])
-            if item_serializer.is_valid():
-                item = item_serializer.save()
-                QuotationItem.objects.create(quotation=quotation, item=item, quantity=item_data['quantity'])
-        
-        quotation.total_amount = total_amount
-        quotation.save()       
+        quotation = serializer.save(total_amount=total_amount)
         
         invoice = Invoice(quotation=quotation, total_amount=total_amount)
         invoice.save()
